@@ -207,7 +207,7 @@ streamlit run src\dashboard.py
 ## Project Structure
 
 ```text
-edge-situational-awareness/
+ZoneTrace/
 │── configs/
 │   └── zone.json
 │
