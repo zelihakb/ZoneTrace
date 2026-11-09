@@ -1,6 +1,7 @@
-# GPU-Accelerated Video Analytics & Event Detection
 
-[![Tests](https://github.com/zelihakb/edge-situational-awareness/actions/workflows/tests.yml/badge.svg)](https://github.com/zelihakb/edge-situational-awareness/actions/workflows/tests.yml)
+# ZoneTrace — Video Analytics & Object Tracking
+
+[![Tests](https://github.com/zelihakb/ZoneTrace/actions/workflows/tests.yml/badge.svg)](https://github.com/zelihakb/ZoneTrace/actions/workflows/tests.yml)
 
 A GPU-accelerated computer vision pipeline for object detection, persistent multi-object tracking, region-based event detection, event persistence, and human-in-the-loop review.
 
