@@ -6,6 +6,7 @@ import pytest
 from src.run_manifest import (
     build_run_manifest,
     save_run_manifest,
+    load_verified_run_manifest,
 )
 
 
@@ -88,3 +89,64 @@ def test_manifest_cannot_overwrite_existing_run(tmp_path):
     saved = json.loads(path.read_text(encoding="utf-8"))
 
     assert saved["run_id"] == "first"
+
+def test_verified_manifest_accepts_matching_video(tmp_path):
+    video = tmp_path / "video.mp4"
+    video.write_bytes(b"original video")
+
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps({
+            "run_id": "run_test",
+            "input_video": {
+                "filename": "video.mp4",
+                "sha256": sha256(b"original video").hexdigest(),
+            },
+        }),
+        encoding="utf-8",
+    )
+
+    result = load_verified_run_manifest(
+        manifest_path,
+        video,
+        "run_test",
+    )
+
+    assert result["run_id"] == "run_test"
+
+
+@pytest.mark.parametrize(
+    ("expected_run_id", "video_content"),
+    [
+        ("run_wrong", b"original video"),
+        ("run_test", b"modified video"),
+    ],
+)
+def test_verified_manifest_rejects_mismatch(
+    tmp_path,
+    expected_run_id,
+    video_content,
+):
+    video = tmp_path / "video.mp4"
+    video.write_bytes(b"original video")
+
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps({
+            "run_id": "run_test",
+            "input_video": {
+                "filename": "video.mp4",
+                "sha256": sha256(b"original video").hexdigest(),
+            },
+        }),
+        encoding="utf-8",
+    )
+
+    video.write_bytes(video_content)
+
+    with pytest.raises(ValueError):
+        load_verified_run_manifest(
+            manifest_path,
+            video,
+            expected_run_id,
+        )    

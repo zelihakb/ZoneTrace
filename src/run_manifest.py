@@ -71,3 +71,26 @@ def save_run_manifest(manifest: dict, path: Path) -> Path:
         file.write(content + "\n")
 
     return path
+def load_verified_run_manifest(
+    manifest_path: Path,
+    input_video: Path,
+    expected_run_id: str,
+) -> dict:
+    """Load a manifest and verify the selected input video."""
+
+    manifest = json.loads(
+        manifest_path.read_text(encoding="utf-8")
+    )
+
+    if manifest.get("run_id") != expected_run_id:
+        raise ValueError("Manifest run ID does not match.")
+
+    video_info = manifest["input_video"]
+
+    if (
+        input_video.name != video_info["filename"]
+        or calculate_file_hash(input_video) != video_info["sha256"]
+    ):
+        raise ValueError("Input video does not match manifest.")
+
+    return manifest
